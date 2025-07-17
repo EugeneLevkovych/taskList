@@ -7,6 +7,7 @@ export default function App() {
     tasks: true,
     completedTasks: true,
   });
+  console.log(tasks);
 
   function toggleSection(section) {
     setOpenSection((prev) => ({
@@ -23,7 +24,13 @@ export default function App() {
     setTasks(tasks.filter((task) => task.id !== id));
   }
 
-  console.log(tasks);
+  function completeTask(id) {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: true } : task
+      )
+    );
+  }
 
   const activeTasks = tasks.filter((task) => !task.completed);
   const completedTasks = tasks.filter((task) => task.completed);
@@ -54,7 +61,11 @@ export default function App() {
           <button className="sort-button">By Priority</button>
         </div>
         {openSection.tasks && (
-          <TaskList deleteTask={deleteTask} activeTasks={activeTasks} />
+          <TaskList
+            completeTask={completeTask}
+            deleteTask={deleteTask}
+            activeTasks={activeTasks}
+          />
         )}
       </div>
 
@@ -66,7 +77,12 @@ export default function App() {
         >
           +
         </button>
-        {openSection.completedTasks && <CompletedTaskList />}
+        {openSection.completedTasks && (
+          <CompletedTaskList
+            deleteTask={deleteTask}
+            completedTasks={completedTasks}
+          />
+        )}
       </div>
       <Footer />
     </div>
@@ -116,22 +132,34 @@ function TaskForm({ addTask }) {
   );
 }
 
-function TaskList({ activeTasks, deleteTask }) {
+function TaskList({ activeTasks, deleteTask, completeTask }) {
   return (
     <ul className="task-list">
       {activeTasks.map((task) => (
-        <TaskItem deleteTask={deleteTask} key={task.id} task={task} />
+        <TaskItem
+          completeTask={completeTask}
+          deleteTask={deleteTask}
+          key={task.id}
+          task={task}
+        />
       ))}
     </ul>
   );
 }
 
-function CompletedTaskList() {
-  return <ul className="completed-task-list">{/* <TaskItem /> */}</ul>;
+function CompletedTaskList({ completedTasks, deleteTask }) {
+  return (
+    <ul className="completed-task-list">
+      {completedTasks.map((item) => (
+        <TaskItem key={item.id} task={item} deleteTask={deleteTask} />
+      ))}
+    </ul>
+  );
 }
 
-function TaskItem({ task, deleteTask }) {
-  const { title, priority, deadline, id } = task;
+function TaskItem({ task, deleteTask, completeTask }) {
+  const { title, priority, deadline, id, completed } = task;
+  console.log(task);
 
   return (
     <li className={`task-item ${priority.toLowerCase()}`}>
@@ -144,7 +172,11 @@ function TaskItem({ task, deleteTask }) {
         </div>
       </div>
       <div className="task-buttons">
-        <button className="complete-button">Complete</button>
+        {!completed && (
+          <button className="complete-button" onClick={() => completeTask(id)}>
+            Complete
+          </button>
+        )}
         <button className="delete-button" onClick={() => deleteTask(id)}>
           Delete
         </button>
@@ -164,4 +196,4 @@ function Footer() {
     </footer>
   );
 }
-//Fokeev 6 vid 6.6
+//Fokeev 6 vid 6.7
