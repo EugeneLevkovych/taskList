@@ -2,12 +2,13 @@ import { useState } from "react";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
+  const [sortType, setSortType] = useState("date");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [openSection, setOpenSection] = useState({
     taskList: false,
     tasks: true,
     completedTasks: true,
   });
-  console.log(tasks);
 
   function toggleSection(section) {
     setOpenSection((prev) => ({
@@ -32,7 +33,31 @@ export default function App() {
     );
   }
 
-  const activeTasks = tasks.filter((task) => !task.completed);
+  function sortTask(tasks) {
+    return tasks.slice().sort((a, b) => {
+      if (sortType === "priority") {
+        const ptiorityOrder = { High: 1, Medium: 2, Low: 3 };
+        return sortOrder === "asc"
+          ? ptiorityOrder[a.priority] - ptiorityOrder[b.priority]
+          : ptiorityOrder[b.priority] - ptiorityOrder[a.priority];
+      } else {
+        return sortOrder === "asc"
+          ? new Date(a.deadline) - new Date(b.deadline)
+          : new Date(b.deadline) - new Date(a.deadline);
+      }
+    });
+  }
+
+  function toggleSortOrder(type) {
+    if (sortType === type) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortType(type);
+      setSortOrder("asc");
+    }
+  }
+
+  const activeTasks = sortTask(tasks.filter((task) => !task.completed));
   const completedTasks = tasks.filter((task) => task.completed);
 
   return (
@@ -57,8 +82,21 @@ export default function App() {
           +
         </button>
         <div className="sort-controls">
-          <button className="sort-button">By Date</button>
-          <button className="sort-button">By Priority</button>
+          <button
+            className={`sort-button ${sortType === "date" ? "active" : ""}`}
+            onClick={() => toggleSortOrder("date")}
+          >
+            By Date{" "}
+            {sortType === "date" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
+          </button>
+          <button
+            className={`sort-button ${sortType === "priority" ? "active" : ""}`}
+            onClick={() => toggleSortOrder("priority")}
+          >
+            By Priority{" "}
+            {sortType === "priority" &&
+              (sortOrder === "asc" ? "\u2191" : "\u2193")}
+          </button>
         </div>
         {openSection.tasks && (
           <TaskList
@@ -112,14 +150,13 @@ function TaskForm({ addTask }) {
         placeholder="Task title"
         required
         onChange={(e) => {
-          console.log(e);
           setTitle(e.target.value);
         }}
       />
       <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-        <option value="High">High</option>
-        <option value="Medium">Medium</option>
         <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
       </select>
       <input
         type="datetime-local"
@@ -159,7 +196,6 @@ function CompletedTaskList({ completedTasks, deleteTask }) {
 
 function TaskItem({ task, deleteTask, completeTask }) {
   const { title, priority, deadline, id, completed } = task;
-  console.log(task);
 
   return (
     <li className={`task-item ${priority.toLowerCase()}`}>
@@ -196,4 +232,4 @@ function Footer() {
     </footer>
   );
 }
-//Fokeev 6 vid 6.7
+//fok 6 vid 6.7(finish)
