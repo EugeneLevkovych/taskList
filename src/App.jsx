@@ -129,7 +129,7 @@ export default function App() {
 
 function TaskForm({ addTask }) {
   const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState("low");
+  const [priority, setPriority] = useState("Low");
   const [deadline, setDeadline] = useState("");
 
   function handleSubmit(e) {
@@ -137,7 +137,7 @@ function TaskForm({ addTask }) {
     if (title.trim() && deadline) {
       addTask({ title, priority, deadline });
       setTitle("");
-      setPriority("low");
+      setPriority("Low");
       setDeadline("");
     }
   }
