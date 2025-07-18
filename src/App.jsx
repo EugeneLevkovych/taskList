@@ -36,10 +36,10 @@ export default function App() {
   function sortTask(tasks) {
     return tasks.slice().sort((a, b) => {
       if (sortType === "priority") {
-        const ptiorityOrder = { High: 1, Medium: 2, Low: 3 };
+        const priorityOrder = { High: 1, Medium: 2, Low: 3 };
         return sortOrder === "asc"
-          ? ptiorityOrder[a.priority] - ptiorityOrder[b.priority]
-          : ptiorityOrder[b.priority] - ptiorityOrder[a.priority];
+          ? priorityOrder[a.priority] - priorityOrder[b.priority]
+          : priorityOrder[b.priority] - priorityOrder[a.priority];
       } else {
         return sortOrder === "asc"
           ? new Date(a.deadline) - new Date(b.deadline)
